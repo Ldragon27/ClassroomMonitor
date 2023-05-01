@@ -5,6 +5,8 @@ import encodings
 import time
 import board
 import adafruit_vl53l1x
+import datetime
+
 
 HOST = '127.0.0.1' #Fill in with local host of PI
 PORT = 10370
@@ -28,27 +30,20 @@ def is_person(data):
 def send_data():
     with conn:
             print('Connected by', addr)
-            while True:
-                data = conn.recv(1024).decode('utf-8')
+            data = conn.recv(1024).decode('ascii')
 
-                if str(data) == "Data":
-                    print("Sending Data")
+            if str(data) == "Data":
+                print("Sending Data")
 
-                    my_data = True #Sends True to client
+                my_data = datetime.datetime.now() #Sends DateTime to client
 
-                    encoded_data = my_data.encode('utf-8')
+                encoded_data = my_data.encode('ascii')
 
-                    conn.sendall(encoded_data)
+                conn.sendall(encoded_data)
 
-                elif str(data) == "Quit":
-                    print("shutting down server")
-                    break
-
-                if not data:
-                    break
-                else:
-                    pass        
-
+            if str(data) == "Quit":
+                print("shutting down server")
+                
 
 if __name__ == '__main__':
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
